@@ -5,10 +5,11 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
   import { Avatar, FileButton } from '@skeletonlabs/skeleton';
+    import { json } from '@sveltejs/kit';
 
   let fileContent = "";
   let filePath = "";
-  
+  let obj;
   let config = {
     Serilog: {
       Using: [],
@@ -20,7 +21,7 @@
       Enrich: []
     },
   };
-
+  
   async function handleOpenFile() {
     try {
       // Открываем диалог выбора файла
@@ -45,7 +46,8 @@
         fileContent = await readTextFile(String(selectedPath));
         config = JSON.parse(fileContent);
         filePath = selectedPath;
-      }
+      } 
+
     } catch (error) {
       console.error("File read error:", error);
     }
@@ -64,46 +66,51 @@
   onMount(() => {
     handleOpenFile();
   });
+  
 </script>
 
+
 <main>
+  
   <button type="button" on:click={handleOpenFile}>Open file</button>
 
-  <h1>Serilog</h1>
+  <h1><strong>Serilog</strong></h1>
 
-  <div class="section">
+  <div class="section" style="margin-left: 20px;">
     <h2>Using</h2>
     {#each config.Serilog.Using, index}
-      <div class="list-item">
-        <input class="input"
+      <div style="margin-left: 20px;">
+        <textarea class="textarea"
           placeholder="Input"
           type="text"
           bind:value={config.Serilog.Using[index]}
-        />
+        ></textarea>
       </div>
     {/each}
   </div>
 
-  <div class="section">
+  <div class="section" style="margin-left: 20px;">
     <h2>MinimumLevel</h2>
-    <div>
+    <div style="margin-left: 20px;">
       <label>
         Default:
-        <input class="input"
-          type="text"
-          bind:value={config.Serilog.MinimumLevel.Default}
-        />
+          <div style="margin-left: 20px;">
+            <textarea class="textarea"
+              type="text"
+              bind:value={config.Serilog.MinimumLevel.Default}
+            ></textarea>
+          </div>
       </label>
     </div>
-    <div>
+    <div style="margin-left: 20px;">
       <h3>Override</h3>
       {#each Object.keys(config.Serilog.MinimumLevel.Override) as key}
-        <div class="list-item">
+        <div style="margin-left: 20px;">
           <span>{key}:</span>
-            <input class="input"
+            <textarea class="textarea"
               type="text"
               bind:value={config.Serilog.MinimumLevel.Override[key]}
-            >
+            ></textarea>
         </div>
       {/each}
     </div>
@@ -113,5 +120,5 @@
 
   <h1>Содержимое файла</h1>
   <pre>{fileContent}</pre>
-  
+
 </main>
